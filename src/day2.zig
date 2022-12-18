@@ -30,13 +30,13 @@ const Play = enum(u8) {
 
     const Self = @This();
 
-    pub fn simplePlay(value: []const u8) Self {
+    fn simplePlay(value: []const u8) Self {
         if (eql(u8, value, "A") or eql(u8, value, "X")) return Self.rock;
         if (eql(u8, value, "B") or eql(u8, value, "Y")) return Self.paper;
         if (eql(u8, value, "C") or eql(u8, value, "Z")) return Self.scissor;
         unreachable;
     }
-    pub fn complexPlay(value: []const u8) Self {
+    fn complexPlay(value: []const u8) Self {
         if (eql(u8, value, "A Y") or eql(u8, value, "B X") or eql(u8, value, "C Z")) return Self.rock;
         if (eql(u8, value, "A Z") or eql(u8, value, "B Y") or eql(u8, value, "C X")) return Self.paper;
         if (eql(u8, value, "A X") or eql(u8, value, "B Z") or eql(u8, value, "C Y")) return Self.scissor;
@@ -57,7 +57,7 @@ const Game = struct {
 
     const Self = @This();
 
-    pub fn createWrong(line: []const u8) Self {
+    fn createWrong(line: []const u8) Self {
         var it = std.mem.split(u8, line, " ");
         const elf = it.next().?;
         const player = it.next().?;
@@ -67,7 +67,7 @@ const Game = struct {
         };
     }
 
-    pub fn createCorrect(line: []const u8) Self {
+    fn createCorrect(line: []const u8) Self {
         var it = std.mem.split(u8, line, " ");
         const elf = it.next().?;
         return Self{
@@ -76,7 +76,7 @@ const Game = struct {
         };
     }
 
-    pub fn setOutcome(self: *Self) void {
+    fn setOutcome(self: *Self) void {
         const outcome: Outcome = switch (self.player) {
             .rock => if (self.elf == .rock) Outcome.draw else if (self.elf == .paper) Outcome.lose else Outcome.win,
             .paper => if (self.elf == .rock) Outcome.win else if (self.elf == .paper) Outcome.draw else Outcome.lose,

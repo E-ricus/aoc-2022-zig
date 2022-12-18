@@ -15,13 +15,13 @@ fn rucksacks(content: []const u8, allocator: std.mem.Allocator) !usize {
     var lines = std.mem.split(u8, std.mem.trimRight(u8, content, "\n"), "\n");
     var sum: usize = 0;
     while (lines.next()) |line| {
-        var items = std.AutoHashMap(u8, bool).init(allocator);
+        var items = std.AutoHashMap(u8, void).init(allocator);
         defer items.deinit();
         const mid = line.len / 2;
         const first = line[0..mid];
         const second = line[mid..];
         for (first) |c| {
-            try items.put(c, true);
+            try items.put(c, {});
         }
         for (second) |c| {
             if (items.contains(c)) {
@@ -37,16 +37,16 @@ fn badges(content: []const u8, allocator: std.mem.Allocator) !usize {
     var lines = std.mem.split(u8, content, "\n");
     var sum: usize = 0;
     var ctrl: usize = 1;
-    var items = std.AutoArrayHashMap(u8, u8).init(allocator);
+    var items = std.AutoHashMap(u8, u8).init(allocator);
     defer items.deinit();
 
     while (lines.next()) |line| : (ctrl += 1) {
         for (line) |c| {
             const entry = try items.getOrPut(c);
-            if (!entry.found_existing and ctrl == 1) {
-                entry.value_ptr.* = 1;
-            } else if (entry.found_existing and entry.value_ptr.* + 1 == ctrl) {
+            if (entry.found_existing and entry.value_ptr.* + 1 == ctrl) {
                 entry.value_ptr.* += 1;
+            } else if (!entry.found_existing) {
+                entry.value_ptr.* = 1;
             }
         }
 
@@ -61,7 +61,7 @@ fn badges(content: []const u8, allocator: std.mem.Allocator) !usize {
         }
         ctrl = 0;
         items.deinit();
-        items = std.AutoArrayHashMap(u8, u8).init(allocator);
+        items = std.AutoHashMap(u8, u8).init(allocator);
     }
     return sum;
 }
