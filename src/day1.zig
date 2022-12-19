@@ -1,10 +1,11 @@
 const std = @import("std");
 const print = std.debug.print;
 
-// Day input
-const day_content = @embedFile("inputs/day1.input");
+const read = @import("read.zig");
 
 pub fn run(allocator: std.mem.Allocator) !void {
+    const day_content = try read.readInputFile(allocator, "day1.input");
+    defer allocator.free(day_content);
     const max_cal = try maxCalories(day_content, allocator);
     print("Max calories: {}\n", .{max_cal});
     const sum_cal = try sumCalories(day_content, allocator);
@@ -43,11 +44,11 @@ fn sumCalories(content: []const u8, allocator: std.mem.Allocator) !usize {
     return sum;
 }
 
-const test_content = @embedFile("inputs/day1.test");
-
 const test_allocator = std.testing.allocator;
 
 test "test parseElfs" {
+    const test_content = try read.readInputFile(test_allocator, "day1.test");
+    defer test_allocator.free(test_content);
     const elfs = try parseElfs(test_content, test_allocator);
     defer test_allocator.free(elfs);
     try std.testing.expectEqual(@as(usize, 5), elfs.len);
@@ -56,11 +57,15 @@ test "test parseElfs" {
 }
 
 test "test maxCalories" {
+    const test_content = try read.readInputFile(test_allocator, "day1.test");
+    defer test_allocator.free(test_content);
     const max = try maxCalories(test_content, test_allocator);
     try std.testing.expectEqual(@as(usize, 24000), max);
 }
 
 test "test sumCalories" {
+    const test_content = try read.readInputFile(test_allocator, "day1.test");
+    defer test_allocator.free(test_content);
     const sum = try sumCalories(test_content, test_allocator);
     try std.testing.expectEqual(@as(usize, 45000), sum);
 }

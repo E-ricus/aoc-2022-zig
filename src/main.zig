@@ -11,9 +11,9 @@ pub fn main() !void {
     defer arena.deinit();
     const alloc = arena.allocator();
     try day1.run(alloc);
-    day2.run();
+    try day2.run(alloc);
     try day3.run(alloc);
-    try day4.run();
+    try day4.run(alloc);
 }
 
 test {

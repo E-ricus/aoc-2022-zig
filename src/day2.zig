@@ -2,10 +2,11 @@ const std = @import("std");
 const print = std.debug.print;
 const eql = std.mem.eql;
 
-// Day input
-const day_content = @embedFile("inputs/day2.input");
+const read = @import("read.zig");
 
-pub fn run() void {
+pub fn run(allocator: std.mem.Allocator) !void {
+    const day_content = try read.readInputFile(allocator, "day2.input");
+    defer allocator.free(day_content);
     const wrong = playGame(day_content, false);
     print("Points with first approach: {}\n", .{wrong});
     const correct = playGame(day_content, true);
@@ -86,14 +87,18 @@ const Game = struct {
     }
 };
 
-const test_content = @embedFile("inputs/day2.test");
+const test_allocator = std.testing.allocator;
 
 test "test playGame wrong" {
+    const test_content = try read.readInputFile(test_allocator, "day2.test");
+    defer test_allocator.free(test_content);
     const sum = playGame(test_content, false);
     try std.testing.expectEqual(@as(usize, 15), sum);
 }
 
 test "test playGame correct" {
+    const test_content = try read.readInputFile(test_allocator, "day2.test");
+    defer test_allocator.free(test_content);
     const sum = playGame(test_content, true);
     try std.testing.expectEqual(@as(usize, 12), sum);
 }

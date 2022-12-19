@@ -1,10 +1,11 @@
 const std = @import("std");
 const print = std.debug.print;
 
-// Day input
-const day_content = @embedFile("inputs/day3.input");
+const read = @import("read.zig");
 
 pub fn run(allocator: std.mem.Allocator) !void {
+    const day_content = try read.readInputFile(allocator, "day3.input");
+    defer allocator.free(day_content);
     const rucks = try rucksacks(day_content, allocator);
     print("Rucksacks: {}\n", .{rucks});
     const badgs = try badges(day_content, allocator);
@@ -79,15 +80,18 @@ fn charToPrio(c: u8) usize {
     }
 }
 
-const test_content = @embedFile("inputs/day3.test");
 const test_allocator = std.testing.allocator;
 
 test "test rucksacks" {
+    const test_content = try read.readInputFile(test_allocator, "day3.test");
+    defer test_allocator.free(test_content);
     const rest = try rucksacks(test_content, test_allocator);
     try std.testing.expectEqual(@as(usize, 157), rest);
 }
 
 test "test badges" {
+    const test_content = try read.readInputFile(test_allocator, "day3.test");
+    defer test_allocator.free(test_content);
     const rest = try badges(test_content, test_allocator);
     try std.testing.expectEqual(@as(usize, 70), rest);
 }

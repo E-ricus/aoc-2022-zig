@@ -1,14 +1,15 @@
 const std = @import("std");
 const print = std.debug.print;
 
-// Day input
-const day_content = @embedFile("inputs/day4.input");
+const read = @import("read.zig");
 
-pub fn run() !void {
+pub fn run(allocator: std.mem.Allocator) !void {
+    const day_content = try read.readInputFile(allocator, "day4.input");
+    defer allocator.free(day_content);
     const cont = try containedOrOverlaped(day_content, true);
-    print("Groups contained: {d}", .{cont});
+    print("Groups contained: {d}\n", .{cont});
     const over = try containedOrOverlaped(day_content, false);
-    print("Groups contained: {d}", .{over});
+    print("Groups contained: {d}\n", .{over});
 }
 
 fn containedOrOverlaped(content: []const u8, contained: bool) !usize {
@@ -56,7 +57,7 @@ fn verify(first: []const u8, second: []const u8, contained: bool) !bool {
     return false;
 }
 
-const test_content = @embedFile("inputs/day4.test");
+const test_allocator = std.testing.allocator;
 
 test "test verify contained" {
     var is_contained = try verify("2-8", "3-7", true);
@@ -77,11 +78,15 @@ test "test verify overlaped" {
 }
 
 test "test contained" {
+    const test_content = try read.readInputFile(test_allocator, "day4.test");
+    defer test_allocator.free(test_content);
     const sum = try containedOrOverlaped(test_content, true);
     try std.testing.expectEqual(@as(usize, 2), sum);
 }
 
 test "test overlaped" {
+    const test_content = try read.readInputFile(test_allocator, "day4.test");
+    defer test_allocator.free(test_content);
     const sum = try containedOrOverlaped(test_content, false);
     try std.testing.expectEqual(@as(usize, 4), sum);
 }
